@@ -5,6 +5,7 @@ import logo from "../../assets/logo.png";
 const navLinks = [
   { name: "Dashboard", path: "/" },
   { name: "Predictions", path: "/weather/predictions" },
+  { name: "Weather Report", path: "/weather/report" },
   { name: "Settings", path: "/settings" },
   { name: "Messages", path: "/messages" },
 ];
