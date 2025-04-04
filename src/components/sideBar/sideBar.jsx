@@ -16,7 +16,7 @@ export default function Sidebar() {
     <div className="flex">
       {/* Sidebar */}
       <div
-        className={` bg-gray-900  text-white h-screen p-5 w-64 transition-all ${
+        className={` bg-gray-900  text-white h-full p-5 w-64 transition-all ${
           isOpen ? "block" : "hidden"
         } md:block`}
       >
