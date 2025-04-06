@@ -12,9 +12,8 @@ function App() {
           <Route path="/" element={<Navigate replace to="/weather" />} />
 
           <Route path="/weather" element={<MainLayout />}>
-            <Route index element={<Predictions />} />
+            <Route index element={<WeatherReport />} />
             <Route path="predictions" element={<Predictions />} />
-            <Route path="report" element={<WeatherReport />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -57,8 +57,8 @@ const WeatherReport = () => {
   }, [selectedCityId]);
 
   const fetchWeatherFromCache = () => {
-    const data = localStorage.getItem("weatherData");
-    const time = localStorage.getItem("weatherDataTime");
+    const data = sessionStorage.getItem(`weatherData${selectedCityId}`);
+    const time = sessionStorage.getItem(`weatherDataTime${selectedCityId}`);
     if (data && time && Date.now() - time < CACHE_LIFETIME) {
       return JSON.parse(data);
     }
@@ -66,8 +66,14 @@ const WeatherReport = () => {
   };
 
   const saveWeatherToCache = (data) => {
-    localStorage.setItem("weatherData", JSON.stringify(data));
-    localStorage.setItem("weatherDataTime", Date.now().toString());
+    sessionStorage.setItem(
+      `weatherData${selectedCityId}`,
+      JSON.stringify(data)
+    );
+    sessionStorage.setItem(
+      `weatherDataTime${selectedCityId}`,
+      Date.now().toString()
+    );
   };
 
   const fetchWeather = async () => {
@@ -77,6 +83,7 @@ const WeatherReport = () => {
     const cached = fetchWeatherFromCache();
     if (cached) {
       setWeather(cached);
+      setLastCityId(selectedCityId);
       setLoading(false);
       return;
     }
@@ -85,7 +92,7 @@ const WeatherReport = () => {
       const res = await fetchWeatherByCityId(selectedCityId);
       const current = res.weather[0].main;
       const icon = res.weather[0].icon;
-      const forecast = generateForecast(current);
+      const forecast = generateForecast(current, 60);
       const weatherData = { current, icon, forecast };
       setWeather(weatherData);
       setLastCityId(selectedCityId);
@@ -157,41 +164,40 @@ const WeatherReport = () => {
               transition={{ duration: 0.4 }}
               className="space-y-6 overflow-x-auto pb-2"
             >
-              {chunkForecast(
-                generateForecast(
-                  weather.current,
-                  {
-                    weekly: 7,
-                    monthly: 30,
-                    biMonthly: 60,
-                  }[forecastPeriod]
-                ),
-                10
-              ).map((chunk, rowIndex) => (
-                <div
-                  key={rowIndex}
-                  className="grid grid-cols-10 gap-4 min-w-max"
-                >
-                  {chunk.map((condition, idx) => (
-                    <div
-                      key={idx}
-                      className="flex flex-col items-center bg-white p-4 rounded-lg shadow-md border border-blue-100"
-                    >
-                      <span className="text-sm font-medium text-blue-800 mb-1">
-                        Day {rowIndex * 10 + idx + 1}
-                      </span>
-                      <img
-                        src={getIconUrl(condition)}
-                        alt={condition}
-                        className="w-10 h-10"
-                      />
-                      <span className="mt-1 text-xs text-blue-600">
-                        {condition}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ))}
+              {chunkForecast(weather.forecast, 10)
+                .slice(
+                  0,
+                  forecastPeriod === "weekly"
+                    ? 1
+                    : forecastPeriod === "monthly"
+                    ? 3
+                    : 6
+                )
+                .map((chunk, rowIndex) => (
+                  <div
+                    key={rowIndex}
+                    className="grid grid-cols-10 gap-4 min-w-max"
+                  >
+                    {chunk.map((condition, idx) => (
+                      <div
+                        key={idx}
+                        className="flex flex-col items-center bg-white p-4 rounded-lg shadow-md border border-blue-100"
+                      >
+                        <span className="text-sm font-medium text-blue-800 mb-1">
+                          Day {rowIndex * 10 + idx + 1}
+                        </span>
+                        <img
+                          src={getIconUrl(condition)}
+                          alt={condition}
+                          className="w-10 h-10"
+                        />
+                        <span className="mt-1 text-xs text-blue-600">
+                          {condition}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
             </motion.div>
           </AnimatePresence>
         </div>
