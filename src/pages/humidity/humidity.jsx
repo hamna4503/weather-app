@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from "react";
 import CitySearch from "../../components/Search/CitySearch";
 import LoadingSpinner from "../../components/Spinners/LoadingSpinner";
-import { fetchAqiByCityId } from "../../utils/aqiApi"; 
-import {
-  generateAqiForecast,
-  getAqiLevel,
-  chunkAqiForecast,
-} from "../../utils/aqiForcast";
+import { fetchHumidityByCityId } from "../../utils/humidityApi";
+import { generateHumidityForecast, chunkHumidityForecast } from "../../utils/humidityForecast";
 import { motion, AnimatePresence } from "framer-motion";
 
 const CACHE_LIFETIME = 7 * 24 * 60 * 60 * 1000;
 
-const AirQualityReport = () => {
+const HumidityReport = () => {
   const [cityList, setCityList] = useState([]);
   const [selectedCityId, setSelectedCityId] = useState("");
-  const [aqiData, setAqiData] = useState(null);
+  const [humidityData, setHumidityData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [forecastPeriod, setForecastPeriod] = useState("weekly");
   const [lastCityId, setLastCityId] = useState("");
@@ -52,49 +48,46 @@ const AirQualityReport = () => {
 
   useEffect(() => {
     if (selectedCityId && selectedCityId !== lastCityId) {
-      fetchAirQuality();
+      fetchHumidity();
     }
   }, [selectedCityId]);
 
-  const fetchAirQualityFromCache = () => {
-    const data = sessionStorage.getItem(`aqiData${selectedCityId}`);
-    const time = sessionStorage.getItem(`aqiDataTime${selectedCityId}`);
+  const fetchHumidityFromCache = () => {
+    const data = sessionStorage.getItem(`humidityData${selectedCityId}`);
+    const time = sessionStorage.getItem(`humidityDataTime${selectedCityId}`);
     if (data && time && Date.now() - time < CACHE_LIFETIME) {
       return JSON.parse(data);
     }
     return null;
   };
 
-  const saveAirQualityToCache = (data) => {
-    sessionStorage.setItem(`aqiData${selectedCityId}`, JSON.stringify(data));
-    sessionStorage.setItem(
-      `aqiDataTime${selectedCityId}`,
-      Date.now().toString()
-    );
+  const saveHumidityToCache = (data) => {
+    sessionStorage.setItem(`humidityData${selectedCityId}`, JSON.stringify(data));
+    sessionStorage.setItem(`humidityDataTime${selectedCityId}`, Date.now().toString());
   };
 
-  const fetchAirQuality = async () => {
+  const fetchHumidity = async () => {
     if (!selectedCityId || selectedCityId === lastCityId) return;
 
     setLoading(true);
-    const cached = fetchAirQualityFromCache();
+    const cached = fetchHumidityFromCache();
     if (cached) {
-      setAqiData(cached);
+      setHumidityData(cached);
       setLastCityId(selectedCityId);
       setLoading(false);
       return;
     }
 
     try {
-      const res = await fetchAqiByCityId(selectedCityId); 
-      const currentAqi = res.aqi; 
-      const forecast = generateAqiForecast(currentAqi, 60);
-      const aqiData = { currentAqi, forecast };
-      setAqiData(aqiData);
+      const res = await fetchHumidityByCityId(selectedCityId);
+      const currentHumidity = res.humidity;
+      const forecast = generateHumidityForecast(currentHumidity, 60);
+      const humidityData = { currentHumidity, forecast };
+      setHumidityData(humidityData);
       setLastCityId(selectedCityId);
-      saveAirQualityToCache(aqiData);
+      saveHumidityToCache(humidityData);
     } catch (err) {
-      alert("Could not fetch air quality data");
+      alert("Could not fetch humidity data");
     }
     setLoading(false);
   };
@@ -102,7 +95,7 @@ const AirQualityReport = () => {
   return (
     <div className="w-full mx-auto py-6 px-12">
       <h2 className="text-4xl font-extrabold text-blue-900 mb-8 text-center">
-        Air Quality Report
+        Humidity Report
       </h2>
 
       {loading && <LoadingSpinner />}
@@ -134,17 +127,12 @@ const AirQualityReport = () => {
         </div>
       </div>
 
-      {aqiData && (
+      {humidityData && (
         <div>
-          <div className="flex items-center gap-4 mb-4 bg-blue-900 px-4 py-4 rounded-md text-white">
+          <div className="flex items-center gap-4 mb-4 bg-blue-100 px-4 py-4 rounded-md text-blue-900">
             <p className="text-xl font-semibold">
-              Current AQI: {getAqiLevel(aqiData.currentAqi).label}
+              Current Humidity: {humidityData.currentHumidity}%
             </p>
-            <div
-              className={`w-6 h-6 rounded-full ${
-                getAqiLevel(aqiData.currentAqi).color
-              }`}
-            ></div>
           </div>
 
           <p className="text-lg font-semibold text-blue-900 capitalize mb-4">
@@ -153,14 +141,14 @@ const AirQualityReport = () => {
 
           <AnimatePresence mode="wait">
             <motion.div
-              key={forecastPeriod + aqiData.currentAqi}
+              key={forecastPeriod + humidityData.currentHumidity}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4 }}
               className="space-y-6 overflow-x-auto pb-2"
             >
-              {chunkAqiForecast(aqiData.forecast, 10)
+              {chunkHumidityForecast(humidityData.forecast, 10)
                 .slice(
                   0,
                   forecastPeriod === "weekly"
@@ -174,24 +162,17 @@ const AirQualityReport = () => {
                     key={rowIndex}
                     className="grid grid-cols-10 gap-4 min-w-max"
                   >
-                    {chunk.map((aqi, idx) => (
+                    {chunk.map((humidity, idx) => (
                       <div
                         key={idx}
-                        className={`flex flex-col items-center p-4 rounded-lg shadow-md border ${
-                          getAqiLevel(aqi).color
-                        }`}
+                        className="flex flex-col items-center p-4 rounded-lg shadow-md border bg-white"
                       >
-                        <span className="text-sm font-medium text-black-800 mb-1">
+                        <span className="text-sm font-medium text-gray-700 mb-1">
                           Day {rowIndex * 10 + idx + 1}
                         </span>
-                        <div
-                          className={`w-10 h-10 rounded-full ${
-                            getAqiLevel(aqi).color
-                          }`}
-                        ></div>
-                        <span className="mt-1 text-xs text-black">
-                          {getAqiLevel(aqi).label}
-                        </span>
+                        <div className="w-10 h-10 bg-blue-300 rounded-full flex items-center justify-center text-blue-900 font-bold">
+                          {humidity}%
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -204,4 +185,4 @@ const AirQualityReport = () => {
   );
 };
 
-export default AirQualityReport;
+export default HumidityReport;

@@ -175,7 +175,7 @@ const Predictions = () => {
 
   return (
     <div className="w-full mx-auto py-6 px-12">
-      <h2 className="text-3xl font-bold text-blue-900 mb-8 text-center">
+      <h2 className="text-4xl font-extrabold text-blue-900 mb-8 text-center">
         Weather Predictions
       </h2>
 
