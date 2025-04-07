@@ -6,6 +6,7 @@ const navLinks = [
   { name: "Dashboard", path: "/" },
   { name: "Weather Report", path: "/weather/" },
   { name: "Predictions", path: "/weather/predictions" },
+  { name: "Air Quality", path: "/airquality" },
   { name: "Settings", path: "/settings" },
   { name: "Messages", path: "/messages" },
 ];
