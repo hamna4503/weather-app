@@ -16,9 +16,11 @@ function App() {
 
           <Route path="/weather" element={<MainLayout />}>
             <Route index element={<WeatherReport />} />
-            <Route path="predictions" element={<Predictions />} />
           </Route>
-          
+          <Route path="graphs" element={<MainLayout />}>
+            <Route index element={<Predictions />} />
+          </Route>
+
           <Route path="/airquality" element={<MainLayout />}>
             <Route index element={<AirQualityReport />} />
           </Route>

@@ -5,12 +5,10 @@ import logo from "../../assets/logo.png";
 const navLinks = [
   { name: "Dashboard", path: "/" },
   { name: "Weather Report", path: "/weather/" },
-  { name: "Predictions", path: "/weather/predictions" },
   { name: "Temperature", path: "/temperature" },
   { name: "Humidity", path: "/humidity" },
   { name: "Air Quality", path: "/airquality" },
-  { name: "Settings", path: "/settings" },
-  { name: "Messages", path: "/messages" },
+  { name: "Graphs", path: "/graphs" },
 ];
 
 export default function Sidebar() {

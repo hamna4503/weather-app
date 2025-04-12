@@ -23,17 +23,17 @@ export const generateForecast = (startState, days = 60) => {
   }
   return forecast;
 };
-
+export const weatherMatrix = {
+  Clear: { Clear: 0.5, Clouds: 0.3, Rain: 0.1, Snow: 0.05, Drizzle: 0.05 },
+  Clouds: { Clear: 0.3, Clouds: 0.4, Rain: 0.2, Snow: 0.05 },
+  Rain: { Clear: 0.2, Clouds: 0.3, Rain: 0.4, Snow: 0.1 },
+  Snow: { Clear: 0.1, Clouds: 0.3, Rain: 0.2, Snow: 0.3 },
+  Drizzle: { Clear: 0.1, Clouds: 0.3, Rain: 0.4, Snow: 0.05 },
+  Thunderstorm: { Clear: 0.1, Clouds: 0.2, Rain: 0.5, Thunderstorm: 0.2 },
+  Fog: { Clear: 0.2, Clouds: 0.3, Fog: 0.4 },
+};
 const generateMarkovMatrix = (currentState) => {
-  const matrix = {
-    Clear: { Clear: 0.5, Clouds: 0.3, Rain: 0.1, Snow: 0.05, Drizzle: 0.05 },
-    Clouds: { Clear: 0.3, Clouds: 0.4, Rain: 0.2, Snow: 0.05 },
-    Rain: { Clear: 0.2, Clouds: 0.3, Rain: 0.4, Snow: 0.1 },
-    Snow: { Clear: 0.1, Clouds: 0.3, Rain: 0.2, Snow: 0.3 },
-    Drizzle: { Clear: 0.1, Clouds: 0.3, Rain: 0.4, Snow: 0.05 },
-    Thunderstorm: { Clear: 0.1, Clouds: 0.2, Rain: 0.5, Thunderstorm: 0.2 },
-    Fog: { Clear: 0.2, Clouds: 0.3, Fog: 0.4 },
-  };
+  const matrix = weatherMatrix;
   return matrix[currentState] || matrix.Clear;
 };
 

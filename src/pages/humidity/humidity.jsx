@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import CitySearch from "../../components/Search/CitySearch";
 import LoadingSpinner from "../../components/Spinners/LoadingSpinner";
 import { fetchHumidityByCityId } from "../../utils/humidityApi";
-import { generateHumidityForecast, chunkHumidityForecast } from "../../utils/humidityForecast";
+import {
+  generateHumidityForecast,
+  chunkHumidityForecast,
+} from "../../utils/humidityForecast";
 import { motion, AnimatePresence } from "framer-motion";
 
 const CACHE_LIFETIME = 7 * 24 * 60 * 60 * 1000;
@@ -62,8 +65,14 @@ const HumidityReport = () => {
   };
 
   const saveHumidityToCache = (data) => {
-    sessionStorage.setItem(`humidityData${selectedCityId}`, JSON.stringify(data));
-    sessionStorage.setItem(`humidityDataTime${selectedCityId}`, Date.now().toString());
+    sessionStorage.setItem(
+      `humidityData${selectedCityId}`,
+      JSON.stringify(data)
+    );
+    sessionStorage.setItem(
+      `humidityDataTime${selectedCityId}`,
+      Date.now().toString()
+    );
   };
 
   const fetchHumidity = async () => {

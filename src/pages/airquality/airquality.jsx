@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CitySearch from "../../components/Search/CitySearch";
 import LoadingSpinner from "../../components/Spinners/LoadingSpinner";
-import { fetchAqiByCityId } from "../../utils/aqiApi"; 
+import { fetchAqiByCityId } from "../../utils/aqiApi";
 import {
   generateAqiForecast,
   getAqiLevel,
@@ -86,8 +86,8 @@ const AirQualityReport = () => {
     }
 
     try {
-      const res = await fetchAqiByCityId(selectedCityId); 
-      const currentAqi = res.aqi; 
+      const res = await fetchAqiByCityId(selectedCityId);
+      const currentAqi = res.aqi;
       const forecast = generateAqiForecast(currentAqi, 60);
       const aqiData = { currentAqi, forecast };
       setAqiData(aqiData);
@@ -160,8 +160,8 @@ const AirQualityReport = () => {
               transition={{ duration: 0.4 }}
               className="space-y-6 overflow-x-auto pb-2"
             >
-              {chunkAqiForecast(aqiData.forecast, 10)
-                .slice(
+              {chunkAqiForecast(aqiData?.forecast, 10)
+                ?.slice(
                   0,
                   forecastPeriod === "weekly"
                     ? 1
@@ -169,12 +169,12 @@ const AirQualityReport = () => {
                     ? 3
                     : 6
                 )
-                .map((chunk, rowIndex) => (
+                ?.map((chunk, rowIndex) => (
                   <div
                     key={rowIndex}
                     className="grid grid-cols-10 gap-4 min-w-max"
                   >
-                    {chunk.map((aqi, idx) => (
+                    {chunk?.map((aqi, idx) => (
                       <div
                         key={idx}
                         className={`flex flex-col items-center p-4 rounded-lg shadow-md border ${
