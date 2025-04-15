@@ -6,6 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const CACHE_LIFETIME = 7 * 24 * 60 * 60 * 1000;
 
+const forecastLabels = {
+    weekly: "Weekly",
+    monthly: "Monthly",
+    biMonthly: "Bi-Monthly"
+};
+
 const Temperature = () => {
     const [cityList, setCityList] = useState([]);
     const [selectedCityId, setSelectedCityId] = useState("");
@@ -30,25 +36,22 @@ const Temperature = () => {
 
     const fetchWeather = async () => {
         if (!selectedCityId || selectedCityId === lastCityId) return;
-
         setLoading(true);
+
         const cached = fetchWeatherFromCache(selectedCityId);
         if (cached) {
             setTemperatureData(cached);
-            setLastCityId(selectedCityId);
-            setLoading(false);
-            return;
+        } else {
+            try {
+                const data = await fetchWeatherData(selectedCityId);
+                setTemperatureData(data);
+                saveWeatherToCache(selectedCityId, data);
+            } catch (err) {
+                alert("Could not fetch weather data");
+            }
         }
 
-        try {
-            const data = await fetchWeatherData(selectedCityId);
-            setTemperatureData(data);
-            setLastCityId(selectedCityId);
-            saveWeatherToCache(selectedCityId, data);
-        } catch (err) {
-            alert("Could not fetch weather data");
-        }
-
+        setLastCityId(selectedCityId);
         setLoading(false);
     };
 
@@ -62,16 +65,11 @@ const Temperature = () => {
 
                 navigator.geolocation?.getCurrentPosition((position) => {
                     const { latitude, longitude } = position.coords;
-                    const nearest = pakCities.reduce(
-                        (closest, city) => {
-                            const dist = Math.hypot(
-                                city.coord.lat - latitude,
-                                city.coord.lon - longitude
-                            );
-                            return dist < closest.dist ? { city, dist } : closest;
-                        },
-                        { city: null, dist: Infinity }
-                    );
+                    const nearest = pakCities.reduce((closest, city) => {
+                        const dist = Math.hypot(city.coord.lat - latitude, city.coord.lon - longitude);
+                        return dist < closest.dist ? { city, dist } : closest;
+                    }, { city: null, dist: Infinity });
+
                     if (nearest.city) {
                         setSelectedCityId(nearest.city.id.toString());
                     }
@@ -101,26 +99,24 @@ const Temperature = () => {
             </h2>
 
             <div className="flex justify-between items-center my-4">
-                <div>
-                    <CitySearch
-                        cities={cityList}
-                        selectedCityId={selectedCityId}
-                        setSelectedCityId={setSelectedCityId}
-                    />
-                </div>
+                <CitySearch
+                    cities={cityList}
+                    selectedCityId={selectedCityId}
+                    setSelectedCityId={setSelectedCityId}
+                />
 
                 <div className="flex gap-3">
-                    {["weekly", "monthly", "biMonthly"].map((period) => (
+                    {Object.keys(forecastLabels).map((period) => (
                         <button
                             key={period}
                             className={`py-2 px-4 rounded-lg transition cursor-pointer ${forecastPeriod === period
-                                    ? "bg-blue-800 text-white shadow"
-                                    : "bg-blue-50 text-blue-800"
+                                ? "bg-blue-800 text-white shadow"
+                                : "bg-blue-50 text-blue-800"
                                 }`}
                             onClick={() => setForecastPeriod(period)}
                             disabled={loading}
                         >
-                            {period.charAt(0).toUpperCase() + period.slice(1)}
+                            {forecastLabels[period]}
                         </button>
                     ))}
                 </div>
@@ -145,11 +141,10 @@ const Temperature = () => {
                                 Feels like {temperatureData.feels_like}°
                             </p>
                         </div>
-
                     </div>
 
-                    <p className="mt-4 text-lg font-semibold text-blue-900 capitalize mb-4">
-                        {forecastPeriod} Forecast
+                    <p className="mt-6 text-lg font-semibold text-blue-900 capitalize mb-4">
+                        {forecastLabels[forecastPeriod]} Forecast
                     </p>
 
                     <AnimatePresence mode="wait">
@@ -162,8 +157,7 @@ const Temperature = () => {
                             className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-4"
                         >
                             {temperatureData.forecast
-                                .slice(
-                                    0,
+                                ?.slice(0,
                                     forecastPeriod === "weekly"
                                         ? 7
                                         : forecastPeriod === "monthly"
@@ -187,12 +181,13 @@ const Temperature = () => {
                                             alt="forecast icon"
                                             className="w-12 h-12 my-2"
                                         />
-                                        <p className="text-lg font-semibold text-blue-900">{day.temp}°</p>
+                                        <p className="text-lg font-semibold text-blue-900">
+                                            {day.temp}°
+                                        </p>
                                     </div>
                                 ))}
                         </motion.div>
                     </AnimatePresence>
-
                 </div>
             )}
         </div>

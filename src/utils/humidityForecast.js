@@ -1,19 +1,38 @@
+export const generateHumidityForecast = (startHumidity, days = 60) => {
+  const matrix = generateHumidityMarkovMatrix(startHumidity);
+  let current = startHumidity;
+  const forecast = [];
+  for (let i = 0; i < days; i++) {
+    current = predictNextHumidity(current, matrix);
+    forecast.push(current);
+  }
+  return forecast;
+};
 
-export const generateHumidityForecast = (baseHumidity, totalDays = 60) => {
-    const forecast = [];
-    for (let i = 0; i < totalDays; i++) {
-      const fluctuation = Math.round(Math.random() * 10 - 5); // ±5%
-      const value = Math.min(100, Math.max(10, baseHumidity + fluctuation));
-      forecast.push(value);
-    }
-    return forecast;
+const generateHumidityMarkovMatrix = (currentHumidity) => {
+  const matrix = {
+    10: { 10: 0.4, 20: 0.3, 30: 0.2, 40: 0.1 },
+    20: { 10: 0.2, 20: 0.4, 30: 0.3, 40: 0.1 },
+    30: { 20: 0.2, 30: 0.5, 40: 0.2, 50: 0.1 },
+    40: { 30: 0.3, 40: 0.4, 50: 0.2, 60: 0.1 },
   };
-  
-  export const chunkHumidityForecast = (forecastArray, chunkSize = 10) => {
-    const chunks = [];
-    for (let i = 0; i < forecastArray.length; i += chunkSize) {
-      chunks.push(forecastArray.slice(i, i + chunkSize));
-    }
-    return chunks;
-  };
-  
+  return matrix[Math.round(currentHumidity / 10) * 10] || matrix[30];
+};
+
+const predictNextHumidity = (currentHumidity, matrix) => {
+  let rand = Math.random();
+  let total = 0;
+  for (let hum in matrix) {
+    total += matrix[hum];
+    if (rand <= total) return parseInt(hum);
+  }
+  return currentHumidity;
+};
+
+export const chunkHumidityForecast = (data, size) => {
+  const chunks = [];
+  for (let i = 0; i < data?.length; i += size) {
+    chunks.push(data.slice(i, i + size));
+  }
+  return chunks;
+};
