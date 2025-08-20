@@ -1,12 +1,28 @@
-# React + Vite
+# 🌦️ Weather Prediction App (Markov Chain Model)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A weather prediction application built using **Markov Chains** to forecast weather patterns across major cities in **Pakistan**.  
 
-Currently, two official plugins are available:
+Developed as part of the **Stochastic Processes course** at **NED University**, applying probability models to practical forecasting problems.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 📌 Features  
+- 🔮 Predicts **up to 1-month weather forecasts** using **Markov Chain transition probabilities**  
+- 🏙️ Supports multiple **Pakistani cities**  
+- 🌡️ Forecasts include **weather conditions, humidity, air quality index, and temperature variations**  
+- 📊 Provides clear visual forecasts for trend interpretation  
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🚀 How It Works  
+1. Collects real-time weather data for a city from an open-source weather API  
+2. Constructs a **state transition matrix** (e.g., Sunny → Cloudy → Rainy)  
+3. Applies **Markov Chain probability rules** to generate **long-term forecasts (up to 30 days)**  
+4. Extends predictions to include **humidity, air index, and other attributes**  
+
+---
+
+## 🎯 Learning Outcomes  
+- Application of **stochastic processes and probability theory** in forecasting  
+- Implementation of **Markov Chain algorithms** for **multi-attribute predictions**  
+- Integration of **mathematical modeling** with real-world weather data  
