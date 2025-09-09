@@ -4,19 +4,21 @@ import { Menu, X } from "lucide-react"; // For icons
 import logo from "../../assets/logo.png";
 const navLinks = [
   { name: "Dashboard", path: "/" },
-  { name: "Predictions", path: "/weather/predictions" },
-  { name: "Settings", path: "/settings" },
-  { name: "Messages", path: "/messages" },
+  { name: "Weather Report", path: "/weather/" },
+  { name: "Temperature", path: "/temperature" },
+  { name: "Humidity", path: "/humidity" },
+  { name: "Air Quality", path: "/airquality" },
+  { name: "Graphs", path: "/graphs" },
 ];
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       {/* Sidebar */}
       <div
-        className={` bg-gray-900  text-white h-screen p-5 w-64 transition-all ${
+        className={` bg-gray-900  text-white h-full p-5 w-64 transition-all ${
           isOpen ? "block" : "hidden"
         } md:block`}
       >

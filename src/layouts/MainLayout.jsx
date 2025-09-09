@@ -5,7 +5,7 @@ import Navbar from "../components/navBar/navBar";
 
 function MainLayout() {
   return (
-    <div className="flex h-screen w-screen">
+    <div className="flex min-h-screen h-full w-screen">
       <Sidebar />
       <div className="flex flex-col w-full">
         <Navbar />
